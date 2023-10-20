@@ -14,15 +14,12 @@ CXXFLAGS = -std=c++11 -Wall -g3 -c
 OBJS = main.o 
 
 # Program name
-PROGRAM = countvocabstrings
+PROGRAM = demandpaging
 
 # instead of calling countsubstrings, can just make all
 all: $(PROGRAM)
 
 # The program depends upon its object files
-$(PROGRAM) : $(OBJS)
-	$(CXX) -pthread -o $(PROGRAM) $(OBJS)
-
 #remmber to choose one
 $(PROGRAM) : $(OBJS)
 	$(CXX) -o $(PROGRAM) $^
