@@ -2,6 +2,7 @@
 #include <fstream>
 #include <unistd.h>
 #include <vector>
+#include <cmath>
 
 #include "vaddr_tracereader.h"
 #include "pagetable.h"
@@ -45,7 +46,7 @@ while ((option = getopt(argc, argv, "n:f:a:l:")) != -1) {
 
             case 'a':
                 ageThreshold = atoi(optarg);
-                if (numFrames < 1) {
+                if (ageThreshold < 1) {
                     cerr << "Age of last access considered recent must be a number, greater than 0" << endl;
                     exit(EXIT_FAILURE);
                 }
@@ -67,29 +68,54 @@ path*/
 specifying the number of bits for each page table level, one number
 per each level */
 
+// cout << numFrames << endl;
 
 ifstream traceFile(argv[optind]);
-traceFile.open(argv[optind]);
-if (!traceFile){
+if (!traceFile.is_open()){
     cerr << "Tracefile Unable to open <<" << argv[optind] << ">>" << endl;
     exit(1);
 }
 
 ifstream readWriteFile(argv[optind + 1]);
-readWriteFile.open(argv[optind + 1]);
-if (!readWriteFile){
+if (!readWriteFile.is_open()){
     cerr << "readWriteFile Unable to open <<" << argv[optind+ 1] << ">>" << endl;
     exit(1);
 }
 
-std::vector<int> levelBits;
 
-if (optind + 2 < argc)
-{
-  
+
+PageTable pagetable;
+
+pagetable.levelCount = argc - (optind + 2);
+int x = 0;
+cout << pagetable.levelCount << endl;
+int totalBits = 0;
+
+for (int i = optind + 2; i < argc; ++i){
+    pagetable.entryCount[x] = static_cast<unsigned int> (pow(2, atoi(argv[i])));
+    totalBits += atoi(argv[i]);
+    pagetable.shiftAry[x] = totalBits;
+    x++;
 }
 
 
+
+//Also correct way but feels pretty bad(Leave for now since I dont know if the first way done will be okay)
+// cout << totalBits << endl;
+// x = 1;
+// pagetable.shiftAry[0] = totalBits;
+// for (int i = optind + 2; i < argc; ++i) {
+//      totalBits = totalBits -  atoi(argv[i]);
+//      pagetable.shiftAry[x] = totalBits;
+//     x++;
+// }
+
+
+// cout << pagetable.entryCount[0] << endl;
+// cout << pagetable.entryCount[1] << endl;
+// cout << pagetable.shiftAry[0] << endl;
+// cout << pagetable.shiftAry[1] << endl;
+// cout << pagetable.shiftAry[2] << endl;
 
 
 return 0;

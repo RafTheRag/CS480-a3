@@ -2,38 +2,17 @@
 #define PAGETABLE_H
 
 
-typedef struct {
-    /**
-    * parameters for printing progress bar
-    */
-    unsigned int numOfProgressMarks;
-    unsigned int hashmarkInterval;
-    unsigned int minNumOfVocabStringsContainedForPrinting;
-    
-} SHARED_DATA;
-
-struct Map {
-    bool valid;
-    int frame;
-};
-
-class Level {
-public:
-    Level(int levels, unsigned int mask, unsigned int shift, int levelNum);
-    Level** nextLevel;
-    Map* mappings;
-    unsigned int mask;
-    unsigned int shift;
-    int levelNum;
-};
 
 class PageTable {
 public:
-    PageTable(int levels);
-    Level* getRootLevel();
-private:
-    int levels;
-    Level* rootLevel;
+
+    int levelCount;              // Number of levels
+    unsigned int* bitmask = new unsigned int[levelCount];      // Bit masks for each level
+    unsigned int* shiftAry = new unsigned int[levelCount];     // Number of bits to shift for each level
+    unsigned int* entryCount = new unsigned int[levelCount];
+
 };
+
+
 
 #endif
