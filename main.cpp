@@ -105,16 +105,6 @@ for (int i = optind + 2; i < argc; ++i){
     x++;
 }
 
-
-
-p2AddrTr addrTrace;
-unsigned long instructionCount = 0;
-
-while (NextAddress(traceFile, &addrTrace)) {
-    unsigned int virtualAddress = addrTrace.addr;
-    
-}
-
 //Also correct way but feels pretty bad(Leave for now since I dont know if the first way done will be okay)
 // cout << totalBits << endl;
 // x = 1;
@@ -131,6 +121,21 @@ while (NextAddress(traceFile, &addrTrace)) {
 // cout << pagetable.shiftAry[0] << endl;
 // cout << pagetable.shiftAry[1] << endl;
 // cout << pagetable.shiftAry[2] << endl;
+
+
+
+p2AddrTr addrTrace;
+unsigned long instructionCount = 0;
+FILE *outputFile = fopen("output.txt", "w");
+
+while (NextAddress(traceFile, &addrTrace)) {
+    unsigned int virtualAddress = addrTrace.addr;
+    cout << virtualAddress << endl;
+    AddressDecoder(&addrTrace, outputFile);
+}
+
+
+
 
 
 return 0;
