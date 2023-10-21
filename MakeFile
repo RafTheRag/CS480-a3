@@ -11,7 +11,7 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall -g3 -c
 
 # object files
-OBJS = main.o 
+OBJS = main.o vaddr_tracereader.o log_helpers.o
 
 # Program name
 PROGRAM = demandpaging
@@ -26,6 +26,12 @@ $(PROGRAM) : $(OBJS)
 
 main.o : main.cpp
 	$(CXX) $(CXXFLAGS) main.cpp
+
+vaddr_tracereader.o : vaddr_tracereader.cpp
+	$(CXX) $(CXXFLAGS) vaddr_tracereader.cpp
+
+log_helpers.o : log_helpers.cpp
+	$(CXX) $(CXXFLAGS) log_helpers.cpp
 
 clean :
 	rm -f *.o $(PROGRAM)

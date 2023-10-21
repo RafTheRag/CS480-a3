@@ -68,20 +68,27 @@ path*/
 specifying the number of bits for each page table level, one number
 per each level */
 
-// cout << numFrames << endl;
 
-ifstream traceFile(argv[optind]);
-if (!traceFile.is_open()){
-    cerr << "Tracefile Unable to open <<" << argv[optind] << ">>" << endl;
-    exit(1);
+const char* traceFileName = argv[optind];
+FILE* traceFile = fopen(traceFileName, "rb");
+
+if (traceFile == nullptr) {
+    std::cerr << "Error: Unable to open the trace file." << std::endl;
+    return 1;
 }
+
+
+// ifstream traceFile(argv[optind]);
+// if (!traceFile.is_open()){
+//     cerr << "Tracefile Unable to open <<" << argv[optind] << ">>" << endl;
+//     exit(1);
+// }
 
 ifstream readWriteFile(argv[optind + 1]);
 if (!readWriteFile.is_open()){
     cerr << "readWriteFile Unable to open <<" << argv[optind+ 1] << ">>" << endl;
     exit(1);
 }
-
 
 
 PageTable pagetable;
@@ -99,6 +106,14 @@ for (int i = optind + 2; i < argc; ++i){
 }
 
 
+
+p2AddrTr addrTrace;
+unsigned long instructionCount = 0;
+
+while (NextAddress(traceFile, &addrTrace)) {
+    unsigned int virtualAddress = addrTrace.addr;
+    
+}
 
 //Also correct way but feels pretty bad(Leave for now since I dont know if the first way done will be okay)
 // cout << totalBits << endl;
