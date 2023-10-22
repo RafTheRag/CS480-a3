@@ -27,10 +27,10 @@ $(PROGRAM) : $(OBJS)
 main.o : main.cpp
 	$(CXX) $(CXXFLAGS) main.cpp
 
-vaddr_tracereader.o : vaddr_tracereader.cpp
+vaddr_tracereader.o :vaddr_tracereader.h vaddr_tracereader.cpp
 	$(CXX) $(CXXFLAGS) vaddr_tracereader.cpp
 
-log_helpers.o : log_helpers.cpp
+log_helpers.o : log_helpers.h log_helpers.cpp
 	$(CXX) $(CXXFLAGS) log_helpers.cpp
 
 clean :

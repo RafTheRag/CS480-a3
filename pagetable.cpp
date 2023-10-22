@@ -1,28 +1,22 @@
 #include "pagetable.h"
 
-
-PageTable::PageTable() {
-    
-    // Initialize the next level array
-    // if (levelNum < levels - 1) {
-    //     nextLevel = new Level*[1 << mask];
-    //     for (int i = 0; i < (1 << mask); i++) {
-    //         nextLevel[i] = nullptr;
-    //     }
-    // }
-    // else {
-    //     nextLevel = nullptr;
-    // }
-
-    // // Initialize the mappings array for leaf nodes
-    // if (levelNum == levels - 1) {
-    //     mappings = new Map[1 << mask];
-    //     for (int i = 0; i < (1 << mask); i++) {
-    //         mappings[i].valid = false;
-    //         mappings[i].frame = -1; // Indicates an invalid frame
-    //     }
-    // }
+unsigned int PageTable::getVPNFromVirtualAddress(unsigned int virtualAddress, unsigned int mask, unsigned int shift) {
+    unsigned int vpn = (virtualAddress & mask) >> shift;
+    return vpn;
 }
+
+void PageTable::insertVpn2PfnMapping(unsigned int vpn, int frame) {
+    // Implement the logic to insert/update the mapping in the page table
+    // based on the provided VPN and frame (PFN).
+}
+
+// Mandatory interface 3: findVpn2PfnMapping
+Map* PageTable::findVpn2PfnMapping(unsigned int vpn) {
+    // Implement the logic to find and return the mapping for the given VPN.
+    // Return NULL or an invalid frame number if the mapping is not found or not valid.
+    // You can define the Map structure as required and return it here.
+}
+    
 
 
 // Implement additional methods as needed for initializing and accessing the page table

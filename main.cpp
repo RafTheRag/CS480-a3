@@ -132,6 +132,10 @@ while (NextAddress(traceFile, &addrTrace)) {
     unsigned int virtualAddress = addrTrace.addr;
     cout << virtualAddress << endl;
     AddressDecoder(&addrTrace, outputFile);
+
+    unsigned int vpn = pagetable.getVPNFromVirtualAddress(virtualAddress, mask, shift);
+
+
 }
 
 
