@@ -52,6 +52,18 @@ while ((option = getopt(argc, argv, "n:f:a:l:")) != -1) {
                 }
                 break;
 
+            /*bitmasks – Write out the bitmasks for each level starting with the
+            * lowest tree level (root node is at level 0), one per line.
+            * va2pa – Show virtual address translation to physical address for
+            * every address, one address translation per line 
+            * vpns_pfn – For every virtual address, show its virtual page
+            * numbers for each level followed by the frame number, one
+            * address per line
+            * vpn2pfn_pr – For every address, show vpn, pfn, replaced vpn if
+            * page replacement happened, and page hit or miss, one address translation per line.
+            * offset – Show page offsets of virtual addresses, one address offset per line.
+            * summary -  Show summary statistics 
+            */ 
             case 'l':
                 logMode = atoi(optarg);
                 break;
@@ -125,16 +137,16 @@ for (int i = optind + 2; i < argc; ++i){
 
 
 p2AddrTr addrTrace;
-unsigned long instructionCount = 0;
 FILE *outputFile = fopen("output.txt", "w");
 
 while (NextAddress(traceFile, &addrTrace)) {
     unsigned int virtualAddress = addrTrace.addr;
-    cout << virtualAddress << endl;
+    cout << &virtualAddress << endl;
     AddressDecoder(&addrTrace, outputFile);
 
-    unsigned int vpn = pagetable.getVPNFromVirtualAddress(virtualAddress, mask, shift);
-
+    //unsigned int vpn = pagetable.getVPNFromVirtualAddress(virtualAddress, pagetable.bitmask, shift);
+    
+   
 
 }
 

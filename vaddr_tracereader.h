@@ -31,7 +31,7 @@ typedef enum {
  * See byu_tracereader.c for details.
  */
 int NextAddress(FILE *trace_file, p2AddrTr *addr_ptr);
-// void AddressDecoder(p2AddrTr *addr_ptr, FILE *out);
+void AddressDecoder(p2AddrTr *addr_ptr, FILE *out);
 
 /* reqtype values */
 #define FETCH			0x00	// instruction fetch

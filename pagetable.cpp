@@ -11,11 +11,11 @@ void PageTable::insertVpn2PfnMapping(unsigned int vpn, int frame) {
 }
 
 // Mandatory interface 3: findVpn2PfnMapping
-Map* PageTable::findVpn2PfnMapping(unsigned int vpn) {
-    // Implement the logic to find and return the mapping for the given VPN.
-    // Return NULL or an invalid frame number if the mapping is not found or not valid.
-    // You can define the Map structure as required and return it here.
-}
+// Map* PageTable::findVpn2PfnMapping(unsigned int vpn) {
+//     // Implement the logic to find and return the mapping for the given VPN.
+//     // Return NULL or an invalid frame number if the mapping is not found or not valid.
+//     // You can define the Map structure as required and return it here.
+// }
     
 
 
