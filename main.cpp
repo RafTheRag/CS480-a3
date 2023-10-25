@@ -9,6 +9,31 @@
 #include "pagereplacement.h"
 using namespace std;
 
+void generateBitMasks(PageTable& table){
+    // cout << table.bitsPerLvl[0] << endl;
+    int numOfMaskBits = table.bitsPerLvl[0];
+    unsigned int aMask = 1;
+    int leftShift = 32;
+
+    for (int i = 0; i < table.levelCount; ++i ){
+        numOfMaskBits = table.bitsPerLvl[i];
+        aMask = 1;
+        for (unsigned int b = 1; b < numOfMaskBits; b++){
+            aMask = aMask << 1;
+            aMask = aMask | 1;
+        }
+        leftShift = leftShift - numOfMaskBits;
+        // cout << leftShift << endl;
+        aMask = aMask << leftShift;
+        table.bitmask[i] = aMask;
+        
+    }
+
+    
+    
+    // table.bitmask[1] = 15;
+}
+
 int main(int argc, char **argv) {
 
 if (argc < 3) {
@@ -16,7 +41,7 @@ if (argc < 3) {
 }
 
 
-int numMemoryAccesses = 1; // Initialize to -1 to indicate it's not specified
+int numMemoryAccesses = 1; // 
 int numFrames = 999999; // Default number of frames
 int ageThreshold = 10; // Default age threshold
 std::string logMode = "summary"; // Default log mode
@@ -52,7 +77,8 @@ while ((option = getopt(argc, argv, "n:f:a:l:")) != -1) {
                 }
                 break;
 
-            /*bitmasks – Write out the bitmasks for each level starting with the
+            /*
+            * bitmasks – Write out the bitmasks for each level starting with the
             * lowest tree level (root node is at level 0), one per line.
             * va2pa – Show virtual address translation to physical address for
             * every address, one address translation per line 
@@ -105,6 +131,7 @@ if (!readWriteFile.is_open()){
 
 PageTable pagetable;
 
+
 pagetable.levelCount = argc - (optind + 2);
 int x = 0;
 cout << pagetable.levelCount << endl;
@@ -112,10 +139,17 @@ int totalBits = 0;
 
 for (int i = optind + 2; i < argc; ++i){
     pagetable.entryCount[x] = static_cast<unsigned int> (pow(2, atoi(argv[i])));
+    pagetable.bitsPerLvl[x] = atoi(argv[i]);
     totalBits += atoi(argv[i]);
     pagetable.shiftAry[x] = totalBits;
     x++;
 }
+generateBitMasks(pagetable);
+// printf("Bitmasks\n");
+// printf("level %d mask %08X\n",0, pagetable.bitmask[0]);
+// printf("level %d mask %08X\n",1, pagetable.bitmask[1]);
+// printf("level %d mask %08X\n",1, pagetable.bitmask[2]);
+// printf("level %d mask %08X\n",1, pagetable.bitmask[3]);
 
 //Also correct way but feels pretty bad(Leave for now since I dont know if the first way done will be okay)
 // cout << totalBits << endl;
@@ -127,21 +161,12 @@ for (int i = optind + 2; i < argc; ++i){
 //     x++;
 // }
 
-
-// cout << pagetable.entryCount[0] << endl;
-// cout << pagetable.entryCount[1] << endl;
-// cout << pagetable.shiftAry[0] << endl;
-// cout << pagetable.shiftAry[1] << endl;
-// cout << pagetable.shiftAry[2] << endl;
-
-
-
 p2AddrTr addrTrace;
 FILE *outputFile = fopen("output.txt", "w");
 
 while (NextAddress(traceFile, &addrTrace)) {
     unsigned int virtualAddress = addrTrace.addr;
-    cout << &virtualAddress << endl;
+    
     AddressDecoder(&addrTrace, outputFile);
 
     //unsigned int vpn = pagetable.getVPNFromVirtualAddress(virtualAddress, pagetable.bitmask, shift);
