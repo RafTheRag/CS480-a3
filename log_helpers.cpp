@@ -10,6 +10,7 @@ using namespace std;
 #endif
 
 /**
+ * Offset
  * @brief Print out a number in hex, one per line
  * @param number 
  */

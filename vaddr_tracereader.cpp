@@ -44,7 +44,7 @@ ENDIAN endian()
 int NextAddress(FILE *trace_file, p2AddrTr *addr_ptr) {
 
   int readN;	/* number of records stored */ 
-  static ENDIAN byte_order = UNKNOWN;	/* don't know machine format */
+  static ENDIAN byte_order = LITTLE;	/* don't know machine format */
 
   if (byte_order == UNKNOWN) {
     /* First invocation.  Determine if this is a litte- or

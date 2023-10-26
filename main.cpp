@@ -7,6 +7,7 @@
 #include "vaddr_tracereader.h"
 #include "pagetable.h"
 #include "pagereplacement.h"
+#include "log_helpers.h"
 using namespace std;
 
 void generateBitMasks(PageTable& table){
@@ -32,6 +33,10 @@ void generateBitMasks(PageTable& table){
     
     
     // table.bitmask[1] = 15;
+}
+
+void generateOffset(PageTable& table){
+
 }
 
 int main(int argc, char **argv) {
@@ -144,7 +149,14 @@ for (int i = optind + 2; i < argc; ++i){
     pagetable.shiftAry[x] = totalBits;
     x++;
 }
+
+int offset = 32;
+for (int i =  0; i < pagetable.levelCount; ++i){
+    offset = offset - pagetable.bitsPerLvl[i];
+}
+cout << offset << endl;
 generateBitMasks(pagetable);
+generateOffset(pagetable);
 // printf("Bitmasks\n");
 // printf("level %d mask %08X\n",0, pagetable.bitmask[0]);
 // printf("level %d mask %08X\n",1, pagetable.bitmask[1]);
@@ -162,19 +174,39 @@ generateBitMasks(pagetable);
 // }
 
 p2AddrTr addrTrace;
-FILE *outputFile = fopen("output.txt", "w");
+// FILE *outputFile = fopen("output.txt", "w");
 
 while (NextAddress(traceFile, &addrTrace)) {
     unsigned int virtualAddress = addrTrace.addr;
+    // print_num_inHex(virtualAddress);
+    // AddressDecoder(&addrTrace, outputFile);
+    unsigned int vpn;
+    int i=0;
+    for (i = 0; i < pagetable.levelCount; ++i){
+        vpn = pagetable.getVPNFromVirtualAddress(virtualAddress, pagetable.bitmask[i], offset);
+        print_num_inHex(vpn);
+    }
     
-    AddressDecoder(&addrTrace, outputFile);
-
-    //unsigned int vpn = pagetable.getVPNFromVirtualAddress(virtualAddress, pagetable.bitmask, shift);
+    
     
    
 
 }
 
+
+if (logMode == "bitmasks"){
+
+} else if (logMode == "va2pa"){
+
+} else if (logMode == "vpns_pfn"){
+
+} else if (logMode == "vpn2pfn_pr"){
+
+} else if (logMode == "offset"){
+
+} else if (logMode == "summary"){
+
+}
 
 
 
