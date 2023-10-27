@@ -10,8 +10,8 @@
 #include "log_helpers.h"
 using namespace std;
 
+//generates bit
 void generateBitMasks(PageTable& table){
-    // cout << table.bitsPerLvl[0] << endl;
     int numOfMaskBits = table.bitsPerLvl[0];
     unsigned int aMask = 1;
     int leftShift = 32;
@@ -24,19 +24,18 @@ void generateBitMasks(PageTable& table){
             aMask = aMask | 1;
         }
         leftShift = leftShift - numOfMaskBits;
-        // cout << leftShift << endl;
         aMask = aMask << leftShift;
         table.bitmask[i] = aMask;
         
     }
-
-    
-    
-    // table.bitmask[1] = 15;
 }
 
-void generateOffset(PageTable& table){
+int generateOffset(int address, int offset){
+    uint32_t original = address;
+    uint32_t shiftedAddress = original << offset;
+    uint32_t offsetAddress= shiftedAddress >> offset;
 
+    return offsetAddress;
 }
 
 int main(int argc, char **argv) {
@@ -46,7 +45,7 @@ if (argc < 3) {
 }
 
 
-int numMemoryAccesses = 1; // 
+int numMemoryAccesses = -1; // 
 int numFrames = 999999; // Default number of frames
 int ageThreshold = 10; // Default age threshold
 std::string logMode = "summary"; // Default log mode
@@ -96,8 +95,9 @@ while ((option = getopt(argc, argv, "n:f:a:l:")) != -1) {
             * summary -  Show summary statistics 
             */ 
             case 'l':
-                logMode = atoi(optarg);
+                logMode = (optarg);
                 break;
+            
 
             default:
                 cout << "Usage: " << argv[0] << " [-n numMemoryAccesses] [-f numFrames] [-a ageThreshold] [-l logMode] trace.tr readswrites.txt bits_per_lvl " << endl;
@@ -110,8 +110,6 @@ path*/
 /* argv[idx+1] through argv[argc-1] would be the arguments for
 specifying the number of bits for each page table level, one number
 per each level */
-
-
 const char* traceFileName = argv[optind];
 FILE* traceFile = fopen(traceFileName, "rb");
 
@@ -134,12 +132,11 @@ if (!readWriteFile.is_open()){
 }
 
 
+
 PageTable pagetable;
-
-
 pagetable.levelCount = argc - (optind + 2);
+
 int x = 0;
-cout << pagetable.levelCount << endl;
 int totalBits = 0;
 
 for (int i = optind + 2; i < argc; ++i){
@@ -150,19 +147,17 @@ for (int i = optind + 2; i < argc; ++i){
     x++;
 }
 
-int offset = 32;
+int shift = 0;
 for (int i =  0; i < pagetable.levelCount; ++i){
+    shift = shift + pagetable.bitsPerLvl[i];
+}
+
+generateBitMasks(pagetable);
+int offset = 32;
+for (int i = 0; i < pagetable.levelCount; ++i){
     offset = offset - pagetable.bitsPerLvl[i];
 }
 cout << offset << endl;
-generateBitMasks(pagetable);
-generateOffset(pagetable);
-// printf("Bitmasks\n");
-// printf("level %d mask %08X\n",0, pagetable.bitmask[0]);
-// printf("level %d mask %08X\n",1, pagetable.bitmask[1]);
-// printf("level %d mask %08X\n",1, pagetable.bitmask[2]);
-// printf("level %d mask %08X\n",1, pagetable.bitmask[3]);
-
 //Also correct way but feels pretty bad(Leave for now since I dont know if the first way done will be okay)
 // cout << totalBits << endl;
 // x = 1;
@@ -175,18 +170,36 @@ generateOffset(pagetable);
 
 p2AddrTr addrTrace;
 // FILE *outputFile = fopen("output.txt", "w");
-
+int numberOfAddressProcessed = 0;
+int pageFrameNum = 0;
 while (NextAddress(traceFile, &addrTrace)) {
+    
+    unsigned int offsetNum = 0;
+    
+    if (numMemoryAccesses >= 0 && numberOfAddressProcessed >= numMemoryAccesses){
+        break;
+    }
+
     unsigned int virtualAddress = addrTrace.addr;
+    
+    offsetNum = generateOffset(virtualAddress,offset);
+    if (logMode == "offset"){
+        print_num_inHex(offsetNum);
+    }
     // print_num_inHex(virtualAddress);
     // AddressDecoder(&addrTrace, outputFile);
-    unsigned int vpn;
+    unsigned int vpn = 0;
     int i=0;
     for (i = 0; i < pagetable.levelCount; ++i){
-        vpn = pagetable.getVPNFromVirtualAddress(virtualAddress, pagetable.bitmask[i], offset);
+        vpn = vpn + pagetable.getVPNFromVirtualAddress(virtualAddress, pagetable.bitmask[i], offset);
         print_num_inHex(vpn);
+        
     }
-    
+    print_num_inHex(vpn);
+    // pagetable.insertVpn2PfnMapping(vpn, frame);
+
+
+    numberOfAddressProcessed++;
     
     
    
@@ -195,7 +208,7 @@ while (NextAddress(traceFile, &addrTrace)) {
 
 
 if (logMode == "bitmasks"){
-
+    log_bitmasks(pagetable.levelCount, pagetable.bitmask);
 } else if (logMode == "va2pa"){
 
 } else if (logMode == "vpns_pfn"){

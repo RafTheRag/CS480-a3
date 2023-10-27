@@ -1,4 +1,9 @@
 #include "pagetable.h"
+#include "level.h"
+
+PageTable::PageTable(){
+    root = new Level(0, this);
+}
 
 unsigned int PageTable::getVPNFromVirtualAddress(unsigned int virtualAddress, unsigned int mask, unsigned int shift) {
     unsigned int vpn = (virtualAddress & mask) >> shift;
