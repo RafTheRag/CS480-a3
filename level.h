@@ -1,10 +1,7 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-#include "PageTable.h"
-
-
-
+#include "pagetable.h"
 
 class Level{
     public:
