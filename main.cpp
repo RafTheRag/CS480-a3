@@ -237,24 +237,26 @@ while (NextAddress(traceFile, &addrTrace)) {
     // if the vpn path is not found it returns -1 and the inserts the vpns into the tree
     // after it increments the pageframe number for the next unfound vpn path
     // else, it find the path and returns the page frame correlated to the vpn
-    foundFrameNum = 0;
     if (pagetable.findVpn2PfnMapping() == -1){
         // cout << pageFrameNum << endl;
         pagetable.insertVpn2PfnMapping(pageFrameNum);
         pageFrameNum++;
+        foundFrameNum = pagetable.findVpn2PfnMapping();
 
     } else {
         foundFrameNum = pagetable.findVpn2PfnMapping();
+        
     }
 
-    //prints the vpns for each level and the frame correlated to them
     if (logMode == "vpns_pfn"){
-            log_vpns_pfn(pagetable.levelCount, pagetable.vpns, foundFrameNum);
+        log_vpns_pfn(pagetable.levelCount, pagetable.vpns, foundFrameNum);
     }
+    //prints the vpns for each level and the frame correlated to them
+    
     
     //prints out the total vpn, the correlated page frame number, the replaced VPN(if replaced), and whether the pages was already in the table or not
     if (logMode == "vpn2pfn_pr"){
-        log_mapping(vpn, pageFrameNum, replacedVPN, pageHitorMiss);
+        log_mapping(vpn, foundFrameNum, replacedVPN, pageHitorMiss);
     }
 
     numberOfAddressProcessed++;
@@ -266,13 +268,8 @@ if (logMode == "bitmasks"){
     log_bitmasks(pagetable.levelCount, pagetable.bitmask);
 } else if (logMode == "va2pa"){
 
-} else if (logMode == "vpns_pfn"){
-
-} else if (logMode == "vpn2pfn_pr"){
-
-} else if (logMode == "offset"){
-
-} else if (logMode == "summary"){
+} 
+else if (logMode == "summary"){
 
 }
 

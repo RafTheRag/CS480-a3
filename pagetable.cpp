@@ -27,16 +27,18 @@ void PageTable::insertVpn2PfnMapping(int frame) {
         // std::cout << vpns[level] << std::endl;
         //if nextLevel is null, creates a new level if it doesn't exist.
         if (currentLevel->nextLevel[vpns[level]] == nullptr) {
+
             currentLevel->nextLevel[vpns[level]] = new Level(level + 1, this);
         }
         currentLevel = currentLevel->nextLevel[vpns[level]];
     }
     // At the leaf level, the map structure is updated
     index = vpns[levelCount - 1];
-    currentLevel->map[vpns[index]].frameNumber = frame;
-    currentLevel->map[vpns[index]].validFlag = true;
+    // std::cout << index << std::endl;
+    currentLevel->map[index].frameNumber = frame;
+    currentLevel->map[index].validFlag = true;
 }
-
+ 
 // Function searches through the tree to check if the level index exists. If not returns -1, and executes the
 // function to insert the vpn into the tree. 
 int PageTable::findVpn2PfnMapping() {
