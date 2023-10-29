@@ -1,3 +1,8 @@
+/*
+ * Author: Rafael Ramirez & Matt D Jaranilla
+ * RedID: 825477088 & 825452453
+ */
+
 #include <stdio.h>
 #include "log_helpers.h"
 
@@ -56,11 +61,11 @@ void log_va2pa(uint32_t va, uint32_t pa) {
  * log mapping between vpn and pfn: mapping(page, frame)
  *   e.g., log_mapping(vpn, pfn, vpnReplaced, true)
  *         pagetable hit
- * 
+ * vpn2pfn_pr
  * if vpnReplaced is -1, there was no page replacement
  * 
  * note if vpnReplaced is bigger than 0, pthit has to be false
- * 
+ * log
  * @param src 
  * @param dest 
  * @param pagereplace
@@ -84,7 +89,7 @@ void log_mapping(uint32_t src, uint32_t dest,
 }
 
 /**
- * @brief log vpns at all levels and the mapped physical frame number
+ * @brief log vpns at all levels and the mapped physical frame number (vpns_pfn)
  * 
  * @param levels - specified number of levels in page table
  * @param vpns - vpns[idx] is the virtual page number associated with 

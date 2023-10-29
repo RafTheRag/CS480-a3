@@ -1,3 +1,7 @@
+/*
+ * Author: Rafael Ramirez & Matt D Jaranilla
+ * RedID: 825477088 & 825452453
+ */
 
 /* C and C++ define some of their types in different places.
  * Check and see if we are using C or C++ and include appropriately
@@ -31,7 +35,7 @@ typedef enum {
  * See byu_tracereader.c for details.
  */
 int NextAddress(FILE *trace_file, p2AddrTr *addr_ptr);
-void AddressDecoder(p2AddrTr *addr_ptr, FILE *out);
+// void AddressDecoder(p2AddrTr *addr_ptr, FILE *out);
 
 /* reqtype values */
 #define FETCH			0x00	// instruction fetch

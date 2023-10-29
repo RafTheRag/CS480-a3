@@ -1,3 +1,8 @@
+/*
+ * Author: Rafael Ramirez & Matt D Jaranilla
+ * RedID: 825477088 & 825452453
+ */
+
 #include <stdio.h>
 #include "vaddr_tracereader.h"
 

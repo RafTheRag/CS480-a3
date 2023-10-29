@@ -1,30 +1,38 @@
+/*
+ * Author: Rafael Ramirez & Matt D Jaranilla
+ * RedID: 825477088 & 825452453
+ */
+
 #ifndef PAGETABLE_H
 #define PAGETABLE_H
 
-//do I have to use forward declaration
+//forward declaratioin
 class Level;
 
 
-typedef struct {
-    int frameNumber;
-    bool validFlag;
+class Map {
+    public:
+        int frameNumber;
+        bool validFlag = false;
     
-}Map;
+};
 
+//contains class members and functions for PageTable
 class PageTable {
     public:
 
-        int levelCount = 0;                                            // Number of levels
+        int levelCount = 0;                                        // Number of levels
         unsigned int* bitmask = new unsigned int[levelCount];      // Bit masks for each level
         unsigned int* shiftAry = new unsigned int[levelCount];     // Number of bits to shift for each level
-        unsigned int* entryCount = new unsigned int[levelCount];
-        unsigned int* bitsPerLvl = new unsigned int[levelCount];
+        unsigned int* entryCount = new unsigned int[levelCount];   // How many entries there should be at each level
+        unsigned int* bitsPerLvl = new unsigned int[levelCount];   // Number of bits at each level
+        unsigned int* vpns = new unsigned int[levelCount];         // Contains the VPN for each level 
         Level* root;
 
         
         unsigned int getVPNFromVirtualAddress(unsigned int virtualAddress, unsigned int mask, unsigned int shift);
-        void insertVpn2PfnMapping(unsigned int vpn, int frame);
-        Map* findVpn2PfnMapping(unsigned int vpn);
+        void insertVpn2PfnMapping(int frame);
+        int findVpn2PfnMapping();
         
         //constructor for page table
         PageTable();

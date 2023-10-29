@@ -1,3 +1,8 @@
+/*
+ * Author: Rafael Ramirez & Matt D Jaranilla
+ * RedID: 825477088 & 825452453
+ */
+
 #ifndef LOG_HELPERS_H
 #define LOG_HELPERS_H
 
