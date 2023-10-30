@@ -36,7 +36,7 @@ void generateBitMasks(PageTable& table){
 }
 
 //Generates offset for each virtual address
-// @param address: virtual address, offset 
+// @param address: virtual address, offset: used to shift over a certain amount of bits
 int generateOffset(int address, int offset){
     uint32_t original = address;
     uint32_t shiftedAddress = original << offset;
@@ -45,6 +45,8 @@ int generateOffset(int address, int offset){
     return offsetAddress;
 }
 
+//Generates physical address for each virtual address
+// @param offset: is the offset of the virtual address, shift: number of bits that is used to shift, frame: frame number correlated to VA 
 int generatePhysicalAddress(int offset, int shift, int frame){
     int physicalAddress = 0;
     physicalAddress = frame << shift;
@@ -74,8 +76,18 @@ int option = 0;
     * n: number of progress marks (either hyphen or #) for displaying 100% progress of a thread execution, default is 50 if not specified.
     * f: place a hash mark “#” in the progress bar every N characters, default is 1
     * a: print number of contained vocab strings to an output file only it is equal to or greater than N, default is 0 if not specified
-    * l:
-    * else will send a error if usage was not correct
+    * l: types of operations:
+    *   bitmasks – Write out the bitmasks for each level starting with the
+    *   lowest tree level (root node is at level 0), one per line.
+    *   va2pa – Show virtual address translation to physical address for
+    *   every address, one address translation per line 
+    *   vpns_pfn – For every virtual address, show its virtual page
+    *   numbers for each level followed by the frame number, one address per line
+    *   vpn2pfn_pr – For every address, show vpn, pfn, replaced vpn if
+    *   page replacement happened, and page hit or miss, one address translation per line.
+    *   offset – Show page offsets of virtual addresses, one address offset per line.
+    *   summary -  Show summary statistics 
+    *   else will send a error if usage was not correct 
     */
 while ((option = getopt(argc, argv, "n:f:a:l:")) != -1) {
         switch (option) {
@@ -106,19 +118,6 @@ while ((option = getopt(argc, argv, "n:f:a:l:")) != -1) {
                 }
                 break;
 
-            /*
-            * bitmasks – Write out the bitmasks for each level starting with the
-            * lowest tree level (root node is at level 0), one per line.
-            * va2pa – Show virtual address translation to physical address for
-            * every address, one address translation per line 
-            * vpns_pfn – For every virtual address, show its virtual page
-            * numbers for each level followed by the frame number, one
-            * address per line
-            * vpn2pfn_pr – For every address, show vpn, pfn, replaced vpn if
-            * page replacement happened, and page hit or miss, one address translation per line.
-            * offset – Show page offsets of virtual addresses, one address offset per line.
-            * summary -  Show summary statistics 
-            */ 
             case 'l':
                 logMode = (optarg);
                 break;
@@ -197,8 +196,10 @@ unsigned int virtualAddress = 0;
 unsigned int vpn = 0;
 int foundFrameNum = 0;
 int physicalAddress = 0; 
+unsigned int vpnPerLevel = 0;
 
-//loops through each address of the trace file
+// loops through each address of the trace file taking care and managing each address to get the offset,
+// vpn(s), physical addresses, pageframe number, and more.
 while (NextAddress(traceFile, &addrTrace)) {
     
     
@@ -207,24 +208,13 @@ while (NextAddress(traceFile, &addrTrace)) {
         break;
     }
 
-
+    // vay to reinstantiate variables in loop
     offsetNum = 0;
     virtualAddress = addrTrace.addr; //sets current address
-    
-
-    //Calls function that generates offset, and prints offset if logmode
-    offsetNum = generateOffset(virtualAddress,offset);
-    if (logMode == "offset"){
-        print_num_inHex(offsetNum);
-    }
-    
-
-
     // AddressDecoder(&addrTrace, outputFile);
-    
     shiftBits = pagetable.shiftAry[pagetable.levelCount - 1];
     vpn = 0;
-    unsigned int vpnPerLevel = 0;
+    vpnPerLevel = 0;
 
     //loops through all the levels of the tree (based on amount of optional arguements)
     for (int i = 0; i < pagetable.levelCount; ++i){
@@ -232,7 +222,7 @@ while (NextAddress(traceFile, &addrTrace)) {
         vpnPerLevel = pagetable.getVPNFromVirtualAddress(virtualAddress, pagetable.bitmask[i], shiftNum);
         // print_num_inHex(vpnPerLevel);
         
-        
+
         //Uses the generated vpn for that level and shifts it by the calculated bits
         vpnPerLevel = vpnPerLevel >> (shiftBits - pagetable.shiftAry[i]);
         
@@ -243,7 +233,7 @@ while (NextAddress(traceFile, &addrTrace)) {
         vpn = vpn + pagetable.getVPNFromVirtualAddress(virtualAddress, pagetable.bitmask[i], shiftNum); // calculates the total vpn
 
     }
-    // print_num_inHex(vpnPerLevel);
+    
     
     // if the vpn path is not found it returns -1 and the inserts the vpns into the tree
     // after it increments the pageframe number for the next unfound vpn path
@@ -259,29 +249,37 @@ while (NextAddress(traceFile, &addrTrace)) {
         
     }
 
+    //Calls function that generates offset, and prints offset if logmode
+    offsetNum = generateOffset(virtualAddress,offset);
+    if (logMode == "offset"){
+        print_num_inHex(offsetNum);
+    }
+
     physicalAddress = generatePhysicalAddress(offsetNum, shiftNum, foundFrameNum);
     if (logMode == "va2pa"){
         log_va2pa(virtualAddress, physicalAddress);
     }
 
+    //prints the vpns for each level and the frame correlated to them
     if (logMode == "vpns_pfn"){
         log_vpns_pfn(pagetable.levelCount, pagetable.vpns, foundFrameNum);
     }
-    //prints the vpns for each level and the frame correlated to them
-    
     
     //prints out the total vpn, the correlated page frame number, the replaced VPN(if replaced), and whether the pages was already in the table or not
     if (logMode == "vpn2pfn_pr"){
         log_mapping(vpn, foundFrameNum, replacedVPN, pageHitorMiss);
     }
 
-    numberOfAddressProcessed++;
+    numberOfAddressProcessed++; //signifies an address has been processed
 
 }
 
+//generate bitmasks when logmode
 if (logMode == "bitmasks"){
     log_bitmasks(pagetable.levelCount, pagetable.bitmask);
 }
+
+//generates summart when logmode
 else if (logMode == "summary"){
 
 }
