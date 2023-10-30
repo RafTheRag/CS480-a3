@@ -142,10 +142,11 @@ if (!readWriteFile.is_open()){
 
 
 //Creates an instance of page table and creates the root node(level 0)
-PageTable pagetable;
 
-pagetable.levelCount = argc - (optind + 2);
-int x = 0;
+int levels = argc - (optind + 2);
+PageTable pagetable = PageTable(levels, optind, argc, argv);
+
+/*int x = 0;
 int totalBits = 0;
 for (int i = optind + 2; i < argc; ++i){
     pagetable.entryCount[x] = static_cast<unsigned int> (pow(2, atoi(argv[i])));
@@ -153,7 +154,7 @@ for (int i = optind + 2; i < argc; ++i){
     totalBits += atoi(argv[i]);
     pagetable.shiftAry[x] = totalBits;
     x++;
-}
+}*/
 
 
 generateBitMasks(pagetable);

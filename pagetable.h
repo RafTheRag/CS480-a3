@@ -21,7 +21,7 @@ class Map {
 class PageTable {
     public:
 
-        int levelCount = 0;                                        // Number of levels
+        int levelCount;                                        // Number of levels
         unsigned int* bitmask = new unsigned int[levelCount];      // Bit masks for each level
         unsigned int* shiftAry = new unsigned int[levelCount];     // Number of bits to shift for each level
         unsigned int* entryCount = new unsigned int[levelCount];   // How many entries there should be at each level
@@ -35,7 +35,7 @@ class PageTable {
         int findVpn2PfnMapping();
         
         //constructor for page table
-        PageTable();
+        PageTable(int levels, int optind, int argc, char** argv);
        
     
 };
