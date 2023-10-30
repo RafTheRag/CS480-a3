@@ -45,7 +45,13 @@ int generateOffset(int address, int offset){
     return offsetAddress;
 }
 
-
+int generatePhysicalAddress(int offset, int shift, int frame){
+    int physicalAddress = 0;
+    physicalAddress = frame << shift;
+    physicalAddress = physicalAddress | offset;
+    
+    return physicalAddress;
+}
 
 int main(int argc, char **argv) {
 
@@ -130,7 +136,7 @@ FILE* traceFile = fopen(traceFileName, "rb");
 
 if (traceFile == nullptr) {
     std::cerr << "Error: Unable to open the trace file." << std::endl;
-    return 1;
+    exit(1);
 }
 
 // argv[idx + 1] now has the second mandatory argument: the trace file path
@@ -167,6 +173,7 @@ for (int i = 0; i < pagetable.levelCount; ++i){
     shiftNum = shiftNum - pagetable.bitsPerLvl[i];
 }
 
+
 //Also correct way but feels pretty bad(Leave for now since I dont know if the first way done will be okay)
 // cout << totalBits << endl;
 // x = 1;
@@ -189,6 +196,7 @@ int shiftBits = 0;
 unsigned int virtualAddress = 0;
 unsigned int vpn = 0;
 int foundFrameNum = 0;
+int physicalAddress = 0; 
 
 //loops through each address of the trace file
 while (NextAddress(traceFile, &addrTrace)) {
@@ -202,6 +210,7 @@ while (NextAddress(traceFile, &addrTrace)) {
 
     offsetNum = 0;
     virtualAddress = addrTrace.addr; //sets current address
+    
 
     //Calls function that generates offset, and prints offset if logmode
     offsetNum = generateOffset(virtualAddress,offset);
@@ -209,6 +218,7 @@ while (NextAddress(traceFile, &addrTrace)) {
         print_num_inHex(offsetNum);
     }
     
+
 
     // AddressDecoder(&addrTrace, outputFile);
     
@@ -249,6 +259,11 @@ while (NextAddress(traceFile, &addrTrace)) {
         
     }
 
+    physicalAddress = generatePhysicalAddress(offsetNum, shiftNum, foundFrameNum);
+    if (logMode == "va2pa"){
+        log_va2pa(virtualAddress, physicalAddress);
+    }
+
     if (logMode == "vpns_pfn"){
         log_vpns_pfn(pagetable.levelCount, pagetable.vpns, foundFrameNum);
     }
@@ -264,12 +279,9 @@ while (NextAddress(traceFile, &addrTrace)) {
 
 }
 
-
 if (logMode == "bitmasks"){
     log_bitmasks(pagetable.levelCount, pagetable.bitmask);
-} else if (logMode == "va2pa"){
-
-} 
+}
 else if (logMode == "summary"){
 
 }
