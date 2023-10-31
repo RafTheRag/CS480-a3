@@ -33,6 +33,9 @@ class PageTable {
         unsigned int getVPNFromVirtualAddress(unsigned int virtualAddress, unsigned int mask, unsigned int shift);
         void insertVpn2PfnMapping(int frame);
         int findVpn2PfnMapping();
+        long calculateBytesUsed();
+        
+        
         
         //constructor for page table
         PageTable(int levels, int optind, int argc, char** argv);

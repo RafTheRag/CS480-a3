@@ -211,7 +211,6 @@ int main(int argc, char **argv) {
     int pagesReplaced = 0;
     int pageSize = pow(2, shiftNum);
     int pagesHit = 0;
-    long totalBytes = 0;
 
     //Variables used in while loop to manage offset, VPNs, physical addresses, pageframe number
     int pageFrameNum = 0;
@@ -273,7 +272,7 @@ int main(int argc, char **argv) {
             
         } else {
             foundFrameNum = pagetable.findVpn2PfnMapping();
-            
+            ++pagesHit;
         }
 
         Node* node = new Node(vpn);
@@ -289,9 +288,7 @@ int main(int argc, char **argv) {
             replacement = true;
             ++pagesReplaced;
         } 
-        else if(circularList.nodeExists(node) ){
-            pagesHit++;
-        }
+        
         node = circularList.getNode(node);
 
         listFrame = node->frame;
@@ -325,11 +322,13 @@ int main(int argc, char **argv) {
 
     }
 
+    long bytesUsed = pagetable.calculateBytesUsed();
+    
     int numMisses = numberOfAddressProcessed - pagesHit;
     if (numFrames > numMisses){
         numFrames = numMisses;
     }
-
+    
 
     //generate bitmasks when logmode
     if (logMode == "bitmasks"){
@@ -343,7 +342,7 @@ int main(int argc, char **argv) {
         pagesHit,
         numberOfAddressProcessed,
         numFrames,
-        totalBytes);
+        bytesUsed);
 
     }
 

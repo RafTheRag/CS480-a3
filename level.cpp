@@ -10,7 +10,6 @@
 //constructor for level, and initializes depth and parenTable varaibles
 Level::Level(int depth, PageTable* table) : depth(depth), parentTable(table) {
     
-    
     //Creates an array of pointers for each level, 
     nextLevel = new Level*[parentTable->entryCount[depth]];
     //std::cout << "First Check: " << parentTable->entryCount[0] << std::endl;

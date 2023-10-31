@@ -10,12 +10,12 @@ PageReplacement::PageReplacement(int maxSize, int ageLimit, std::string readWrit
     file.seekg(0, std::ios::end);
     std::streampos fileSize = file.tellg();
     file.seekg(0, std::ios::beg);
-    
+
     actions = new char[fileSize];
 
     file.read(actions, fileSize);
     file.close();
-    
+
 }
 
 void PageReplacement::insertNode(Node* node){
@@ -29,7 +29,7 @@ void PageReplacement::insertNode(Node* node){
         time++;
         return;
     }
-    
+
     Node* currentNode = head;
 
     while(currentNode->next){
@@ -48,9 +48,8 @@ void PageReplacement::insertNode(Node* node){
         clockHand = 0;
     }
 }
-
 bool PageReplacement::nodeExists(Node* node){
-    
+
     Node* currentNode = head;
 
     while(currentNode != nullptr && currentNode->next != head){
@@ -71,7 +70,7 @@ bool PageReplacement::nodeExists(Node* node){
 
 Node* PageReplacement::getNode(Node* node){
     Node* currentNode = head;
-    
+
     while(currentNode){
         if(currentNode->vpn == node->vpn){
             return currentNode;
@@ -97,14 +96,14 @@ void PageReplacement::replaceNode(Node* replacementNode){
         }
         currentNode = currentNode->next;
         clockHand++;
-        
+
         if(clockHand >= maxSize){
             clockHand = 0;
         }
 
         nodeAge = time - currentNode->lastAccesedTime;
     }
-    
+
     currentNode->victimVpn = currentNode->vpn;
     currentNode->vpn = replacementNode->vpn;
     currentNode->isHit = false;
@@ -112,5 +111,5 @@ void PageReplacement::replaceNode(Node* replacementNode){
 
     clockHand++;
     time++;
-    
+
 }

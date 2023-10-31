@@ -24,6 +24,7 @@ PageTable::PageTable(int levels, int optind, int argc, char** argv) : levelCount
 
     root = new Level(0, this);
     
+    
 }
 
 //Generates the virtual address for vpn's for each level by using the bitmask for each level and then shifting the bits
@@ -71,4 +72,14 @@ int PageTable::findVpn2PfnMapping() {
     } else {
         return -1;
     }
+}
+
+
+long PageTable::calculateBytesUsed() {
+    long bytesUsed = sizeof(*this);  // Add the size of the PageTable object itself
+
+    // Traverse the tree and add the size of each level
+    bytesUsed += root->calculateBytesUsed();
+
+    return bytesUsed;
 }
