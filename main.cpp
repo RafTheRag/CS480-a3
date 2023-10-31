@@ -150,6 +150,7 @@ if (!readWriteFile.is_open()){
 
 int levels = argc - (optind + 2);
 PageTable pagetable = PageTable(levels, optind, argc, argv);
+PageReplacement circularList = PageReplacement(numFrames, ageThreshold, argv[optind + 1]);
 
 /*int x = 0;
 int totalBits = 0;
@@ -249,6 +250,26 @@ while (NextAddress(traceFile, &addrTrace)) {
         
     }
 
+    Node* node = new Node(vpn);
+    int listVpn;
+    int listFrame;
+    bool replacement = false;
+    
+    if(!circularList.nodeExists(node) && !circularList.isFull){
+        circularList.insertNode(node);
+    }
+    else if(circularList.isFull && !circularList.nodeExists(node)){
+        circularList.replaceNode(node);
+        replacement = true;
+    }
+    node = circularList.getNode(node);
+
+    listFrame = node->frame;
+    listVpn = node->vpn;
+    pageHitorMiss = node->isHit;
+    replacedVPN = node->victimVpn;
+
+
     //Calls function that generates offset, and prints offset if logmode
     offsetNum = generateOffset(virtualAddress,offset);
     if (logMode == "offset"){
@@ -267,7 +288,7 @@ while (NextAddress(traceFile, &addrTrace)) {
     
     //prints out the total vpn, the correlated page frame number, the replaced VPN(if replaced), and whether the pages was already in the table or not
     if (logMode == "vpn2pfn_pr"){
-        log_mapping(vpn, foundFrameNum, replacedVPN, pageHitorMiss);
+        log_mapping(listVpn, listFrame, replacedVPN, pageHitorMiss);
     }
 
     numberOfAddressProcessed++; //signifies an address has been processed
