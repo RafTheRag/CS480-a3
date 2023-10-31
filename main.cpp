@@ -250,22 +250,26 @@ int main(int argc, char **argv) {
             
         } else {
             foundFrameNum = pagetable.findVpn2PfnMapping();
-            ++pagesHit;
         }
 
+        //We create a new node with the vpn, we then look for it in the ciruclar list
+        //If the node is found we return the node and we assign the data of the node to corresponding
+        //variables that will be used in the log helper. If it is not found it is inserted or used as a replacement
+        //And we then return the node to again extrapolate the needed information.
         Node* node = new Node(vpn);
         int listVpn = 0;
         int listFrame = 0;
-        bool replacement = false;
         
         if(!circularList.nodeExists(node) && !circularList.isFull){
             circularList.insertNode(node);
         }
         else if(circularList.isFull && !circularList.nodeExists(node)){
             circularList.replaceNode(node);
-            replacement = true;
             ++pagesReplaced;
-        } 
+        }
+        else{
+            ++pagesHit;
+        }
         
         node = circularList.getNode(node);
 
