@@ -39,7 +39,6 @@ void PageTable::insertVpn2PfnMapping(int frame) {
 
     //iterates through all the levels and inserts the vpn correlated to the level
     for (int level = 0; level < levelCount - 1; ++level) {
-        // std::cout << vpns[level] << std::endl;
         //if nextLevel is null, creates a new level if it doesn't exist.
         if (currentLevel->nextLevel[vpns[level]] == nullptr) {
 
@@ -49,7 +48,6 @@ void PageTable::insertVpn2PfnMapping(int frame) {
     }
     // At the leaf level, the map structure is updated
     index = vpns[levelCount - 1];
-    // std::cout << index << std::endl;
     currentLevel->map[index].frameNumber = frame;
     currentLevel->map[index].validFlag = true;
 }

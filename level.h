@@ -21,28 +21,7 @@ class Level{
 
 
         //Calculates the total number of bytes used in the PageTable class
-        long calculateBytesUsed() {
-            long bytesUsed = sizeof(*this);  // Add the size of the Level object itself
-
-            // Add the size of the children array
-            bytesUsed += sizeof(*nextLevel) * parentTable->entryCount[depth];
-
-            // If this is not a leaf level, traverse the children
-            if (depth < parentTable->levelCount - 1) {
-                for (unsigned int i = 0; i < parentTable->entryCount[depth]; i++) {
-                    if (nextLevel[i] != nullptr) {
-                        bytesUsed += nextLevel[i]->calculateBytesUsed();
-                    }
-                }
-            }
-
-            // If this is a leaf level, add the size of the map
-            if (depth == parentTable->levelCount - 1) {
-                bytesUsed += sizeof(*map) * parentTable->entryCount[depth];
-            }
-
-            return bytesUsed;
-        }
+        long calculateBytesUsed();
 
 
         
