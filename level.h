@@ -16,9 +16,11 @@ class Level{
         Map* map;
         Level** nextLevel;
 
-            // Constructor for non-leaf levels
+        // Constructor for non-leaf levels
         Level(int depth, PageTable* table);
 
+
+        //Calculates the total number of bytes used in the PageTable class
         long calculateBytesUsed() {
             long bytesUsed = sizeof(*this);  // Add the size of the Level object itself
 

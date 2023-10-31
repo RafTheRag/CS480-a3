@@ -74,12 +74,12 @@ int PageTable::findVpn2PfnMapping() {
     }
 }
 
-
+//Calculates the total number of bytes used in the PageTable class
 long PageTable::calculateBytesUsed() {
     long bytesUsed = sizeof(*this);  // Add the size of the PageTable object itself
 
-    // Traverse the tree and add the size of each level
-    bytesUsed += root->calculateBytesUsed();
+    
+    bytesUsed += root->calculateBytesUsed();// Traverse the level tree and adds the bytes
 
     return bytesUsed;
 }

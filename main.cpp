@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    // argv[idx + 1] now has the second mandatory argument: the trace file path
+    // argv[idx + 1] now has the second mandatory argument: the readWrite file path
     ifstream readWriteFile(argv[optind + 1]);
     if (!readWriteFile.is_open()){
         cerr << "readWriteFile Unable to open <<" << argv[optind+ 1] << ">>" << endl;
@@ -152,6 +152,9 @@ int main(int argc, char **argv) {
     PageTable pagetable = PageTable(levels, optind, argc, argv);
     PageReplacement circularList = PageReplacement(numFrames, ageThreshold, argv[optind + 1]);
 
+
+    //Error checking to make sure that each level has atleast 1 bit, and that the total bits 
+    // of each level add up to a number equal to or less than 28.
     int x = 0;
     int totalBits = 0;
     for (int i = optind + 2; i < argc; ++i){
@@ -168,19 +171,7 @@ int main(int argc, char **argv) {
     
     }
 
-
-    // int x = 0;
-    // int totalBits = 0;
-    // for (int i = optind + 2; i < argc; ++i){
-    //     pagetable.entryCount[x] = static_cast<unsigned int> (pow(2, atoi(argv[i])));
-    //     pagetable.bitsPerLvl[x] = atoi(argv[i]);
-        
-    //     totalBits += atoi(argv[i]);
-    //     pagetable.shiftAry[x] = totalBits;
-    //     x++;
-    // }
-
-
+    //function generates the bitmasks for each level
     generateBitMasks(pagetable);
 
     // calculates the number of bits that need to be shifted to get the offset from VA and the number of bit to get shifted for the vpn
@@ -191,20 +182,8 @@ int main(int argc, char **argv) {
         shiftNum = shiftNum - pagetable.bitsPerLvl[i];
     }
 
-
-    //Also correct way but feels pretty bad(Leave for now since I dont know if the first way done will be okay)
-    // cout << totalBits << endl;
-    // x = 1;
-    // pagetable.shiftAry[0] = totalBits;
-    // for (int i = optind + 2; i < argc; ++i) {
-    //      totalBits = totalBits -  atoi(argv[i]);
-    //      pagetable.shiftAry[x] = totalBits;
-    //     x++;
-    // }
-
-
     p2AddrTr addrTrace;
-    // FILE *outputFile = fopen("output.txt", "w");
+    // FILE *outputFile = fopen("output.txt", "w"); // Uncomment if you want to see the addresses and their representation
 
     //Variables used in summary
     int numberOfAddressProcessed = 0;
@@ -236,8 +215,8 @@ int main(int argc, char **argv) {
 
         // Way to reinstantiate variables in loop
         offsetNum = 0;
-        virtualAddress = addrTrace.addr; //sets current address
-        // AddressDecoder(&addrTrace, outputFile);
+        virtualAddress = addrTrace.addr;                            //sets current address
+        // AddressDecoder(&addrTrace, outputFile);                  // Uncomment if you want to see the addresses and their representation
         shiftBits = pagetable.shiftAry[pagetable.levelCount - 1];
         vpn = 0;
         vpnPerLevel = 0;
@@ -246,8 +225,7 @@ int main(int argc, char **argv) {
         for (int i = 0; i < pagetable.levelCount; ++i){
             
             vpnPerLevel = pagetable.getVPNFromVirtualAddress(virtualAddress, pagetable.bitmask[i], shiftNum);
-            // print_num_inHex(vpnPerLevel);
-            
+
 
             //Uses the generated vpn for that level and shifts it by the calculated bits
             vpnPerLevel = vpnPerLevel >> (shiftBits - pagetable.shiftAry[i]);
@@ -265,7 +243,7 @@ int main(int argc, char **argv) {
         // after it increments the pageframe number for the next unfound vpn path
         // else, it find the path and returns the page frame correlated to the vpn
         if (pagetable.findVpn2PfnMapping() == -1){
-            // cout << pageFrameNum << endl;
+
             pagetable.insertVpn2PfnMapping(pageFrameNum);
             pageFrameNum++;
             foundFrameNum = pagetable.findVpn2PfnMapping();
@@ -302,7 +280,8 @@ int main(int argc, char **argv) {
         if (logMode == "offset"){
             print_num_inHex(offsetNum);
         }
-
+        
+        //prints the virtual address to physical address correlation
         physicalAddress = generatePhysicalAddress(offsetNum, shiftNum, foundFrameNum);
         if (logMode == "va2pa"){
             log_va2pa(virtualAddress, physicalAddress);
@@ -322,8 +301,11 @@ int main(int argc, char **argv) {
 
     }
 
+    //calculates bytes used (should show that even though there is the same amount of total bits, if there are more levels less bytes should be used)
     long bytesUsed = pagetable.calculateBytesUsed();
     
+
+    //Checks how many frames should be allocated
     int numMisses = numberOfAddressProcessed - pagesHit;
     if (numFrames > numMisses){
         numFrames = numMisses;
@@ -335,7 +317,7 @@ int main(int argc, char **argv) {
         log_bitmasks(pagetable.levelCount, pagetable.bitmask);
     }
 
-    //generates summart when logmode
+    //generates summary when logmode
     else if (logMode == "summary"){
         log_summary(pageSize,
         pagesReplaced,
@@ -345,9 +327,6 @@ int main(int argc, char **argv) {
         bytesUsed);
 
     }
-
-
-
 
     return 0;
 }

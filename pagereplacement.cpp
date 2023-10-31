@@ -48,6 +48,7 @@ void PageReplacement::insertNode(Node* node){
         clockHand = 0;
     }
 }
+
 bool PageReplacement::nodeExists(Node* node){
 
     Node* currentNode = head;
