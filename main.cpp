@@ -187,7 +187,15 @@ for (int i = 0; i < pagetable.levelCount; ++i){
 
 p2AddrTr addrTrace;
 // FILE *outputFile = fopen("output.txt", "w");
+
+//Variables used in summary
 int numberOfAddressProcessed = 0;
+int pagesReplaced = 0;
+int pageSize = pow(2, shiftNum);
+int pagesHit = 0;
+long totalBytes = 0;
+
+//Variables used in while loop to manage offset, VPNs, physical addresses, pageframe number
 int pageFrameNum = 0;
 int replacedVPN = 0;
 bool pageHitorMiss = false;
@@ -209,7 +217,7 @@ while (NextAddress(traceFile, &addrTrace)) {
         break;
     }
 
-    // vay to reinstantiate variables in loop
+    // Way to reinstantiate variables in loop
     offsetNum = 0;
     virtualAddress = addrTrace.addr; //sets current address
     // AddressDecoder(&addrTrace, outputFile);
@@ -244,15 +252,15 @@ while (NextAddress(traceFile, &addrTrace)) {
         pagetable.insertVpn2PfnMapping(pageFrameNum);
         pageFrameNum++;
         foundFrameNum = pagetable.findVpn2PfnMapping();
-
+        
     } else {
         foundFrameNum = pagetable.findVpn2PfnMapping();
         
     }
 
     Node* node = new Node(vpn);
-    int listVpn;
-    int listFrame;
+    int listVpn = 0;
+    int listFrame = 0;
     bool replacement = false;
     
     if(!circularList.nodeExists(node) && !circularList.isFull){
@@ -261,6 +269,9 @@ while (NextAddress(traceFile, &addrTrace)) {
     else if(circularList.isFull && !circularList.nodeExists(node)){
         circularList.replaceNode(node);
         replacement = true;
+        ++pagesReplaced;
+    } else if(circularList.nodeExists(node) ){
+        pagesHit++;
     }
     node = circularList.getNode(node);
 
@@ -294,6 +305,11 @@ while (NextAddress(traceFile, &addrTrace)) {
     numberOfAddressProcessed++; //signifies an address has been processed
 
 }
+int numMisses = numberOfAddressProcessed - pagesHit;
+if (numFrames > numMisses){
+    numFrames = numMisses;
+}
+
 
 //generate bitmasks when logmode
 if (logMode == "bitmasks"){
@@ -302,6 +318,12 @@ if (logMode == "bitmasks"){
 
 //generates summart when logmode
 else if (logMode == "summary"){
+    log_summary(pageSize,
+    pagesReplaced,
+    pagesHit,
+    numberOfAddressProcessed,
+    numFrames,
+    totalBytes);
 
 }
 

@@ -34,7 +34,8 @@ unsigned int PageTable::getVPNFromVirtualAddress(unsigned int virtualAddress, un
 
 void PageTable::insertVpn2PfnMapping(int frame) {
     Level* currentLevel = root;
-    unsigned int index;
+    unsigned int index = 0;
+
     //iterates through all the levels and inserts the vpn correlated to the level
     for (int level = 0; level < levelCount - 1; ++level) {
         // std::cout << vpns[level] << std::endl;

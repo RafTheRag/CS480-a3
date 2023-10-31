@@ -12,8 +12,8 @@ class Level;
 
 class Map {
     public:
-        int frameNumber;
-        bool validFlag;
+        int frameNumber = 0;
+        bool validFlag = false;
     
 };
 
